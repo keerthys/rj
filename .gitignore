@@ -1,0 +1,32 @@
+*.DS_Store
+*.class
+*.settings
+*.apk
+
+# files for the dex VM
+*.dex
+
+# no local prefs
+local.properties
+
+#Auto-generated files
+.checkstyle
+*.orig
+obj
+bin
+gen
+
+
+# en-rUS values is auto-generated, copied from values folder
+values-en-rUS
+
+#The new SDK changes the classpath, so ignore updates to it
+.project
+
+# Temporary editor files
+*.sw*
+*~
+*#
+.#*
+
+
