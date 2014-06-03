@@ -18,23 +18,25 @@ import android.util.Log;
 
 import com.keerthy.media.activities.NowPlayingActivity;
 import com.keerthy.media.cache.MusicItem;
+import com.keerthy.media.controller.IMediaPlaybackListener;
 import com.keerthy.music.R;
 
 /**
  * Talks with {@link MediaPlayer} and provides the implementation for the
- * different play back options specified in {@link MediaPlayerControls}
+ * different play back options specified in {@link IMediaPlayerControls}
  * 
  * @author keerthys
  * 
  */
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener,
-    MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayerControls {
+    MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, IMediaPlayerControls {
 
     private static final int NOTIFY_ID = 1;
     private final IBinder musicBinder = new MusicBinder();
 
     private MediaPlayer mediaPlayer;
     private List<MusicItem> musicItems;
+    private IMediaPlaybackListener mediaPlaybackListener;
     private int currentIndex;
 
     @Override
@@ -57,6 +59,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void setList(List<MusicItem> musicItems) {
         this.musicItems = musicItems;
         this.currentIndex = 0;
+    }
+
+    public void setListener(IMediaPlaybackListener mediaPlaybackListener) {
+        this.mediaPlaybackListener = mediaPlaybackListener;
     }
 
     @Override
@@ -119,13 +125,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
+    public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
+        mediaPlayer.reset();
         return false;
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        // playNext();
+        // If the particular track has finished playing, start playing the next
+        // track.
+        if (mediaPlayer.getCurrentPosition() >= 0) {
+            playNext();
+        }
     }
 
     @Override
@@ -146,6 +157,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         Notification not = builder.build();
 
         startForeground(NOTIFY_ID, not);
+        mediaPlaybackListener.onTrackChange();
     }
 
     private void playMusic() {
@@ -160,8 +172,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         catch (Exception e) {
             throw new RuntimeException(e.fillInStackTrace());
         }
-        
-        
+
     }
 
     /**
@@ -174,6 +185,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         public MusicService getService() {
             return MusicService.this;
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+        super.onDestroy();
     }
 
 }

@@ -6,7 +6,7 @@ package com.keerthy.media.service;
  * @author keerthys
  * 
  */
-public interface MediaPlayerControls {
+public interface IMediaPlayerControls {
 
     /**
      * Plays the specified song index.

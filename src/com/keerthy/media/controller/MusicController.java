@@ -25,7 +25,7 @@ import com.keerthy.media.widget.MediaControllerWidget;
  * @author keerthys
  * 
  */
-public class MusicController extends BaseController implements MediaPlayerControl {
+public class MusicController extends BaseController implements MediaPlayerControl, IMediaPlaybackListener {
 
     private MusicService musicService;
     private boolean boundToService;
@@ -98,6 +98,7 @@ public class MusicController extends BaseController implements MediaPlayerContro
             MusicBinder musicBinder = (MusicBinder) binder;
             musicService = musicBinder.getService();
             musicService.setList(musicItems);
+            musicService.setListener(MusicController.this);
             musicService.playMusic(3);    
             musicControllerWidget.show();
             boundToService = true;
@@ -125,15 +126,19 @@ public class MusicController extends BaseController implements MediaPlayerContro
             @Override
             public void onClick(View v) {
               musicService.playNext();
-              musicControllerWidget.show();
             }
           }, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               musicService.playPrevious();
-              musicControllerWidget.show();
+              
             }
           });
+    }
+    
+    @Override
+    public void onTrackChange() {
+        musicControllerWidget.show(0);        
     }
 
     @Override
