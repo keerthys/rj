@@ -14,9 +14,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.util.Log;
 
-import com.keerthy.media.activities.NowPlayingActivity;
+import com.keerthy.media.activities.HomeActivity;
 import com.keerthy.media.cache.MusicItem;
 import com.keerthy.media.controller.IMediaPlaybackListener;
 import com.keerthy.music.R;
@@ -144,7 +143,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mediaPlayer.start();
         MusicItem musicItem = musicItems.get(currentIndex);
         // TODO - Re factor notification part.
-        Intent notIntent = new Intent(this, NowPlayingActivity.class);
+        Intent notIntent = new Intent(this, HomeActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0, notIntent,
             PendingIntent.FLAG_UPDATE_CURRENT);

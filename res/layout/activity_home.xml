@@ -1,0 +1,46 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:dragView="@+id/songTitle"
+        sothree:panelHeight="68dp"
+        sothree:paralaxOffset="100dp"
+        sothree:shadowHeight="4dp" >
+
+        <!-- MAIN CONTENT repreented via fragments -->
+
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- SLIDING LAYOUT -->
+
+        <fragment
+            android:id="@+id/now_playing_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            class="com.keerthy.media.fragments.NowPlayingFragment" />
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    <!-- The navigation drawer -->
+
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/list_background"
+        android:choiceMode="singleChoice"
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
+
+</android.support.v4.widget.DrawerLayout>

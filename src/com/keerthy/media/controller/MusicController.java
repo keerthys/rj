@@ -2,33 +2,35 @@ package com.keerthy.media.controller;
 
 import java.util.List;
 
-import android.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.view.View;
-import android.widget.MediaController.MediaPlayerControl;
 
 import com.keerthy.media.MediaApplication;
-import com.keerthy.media.activities.NowPlayingActivity;
+import com.keerthy.media.activities.HomeActivity;
 import com.keerthy.media.cache.MusicDetailsRetriever;
 import com.keerthy.media.cache.MusicItem;
 import com.keerthy.media.service.MusicService;
 import com.keerthy.media.service.MusicService.MusicBinder;
 import com.keerthy.media.widget.MediaControllerWidget;
+import com.keerthy.media.widget.MediaControllerWidget.IMediaPlayerController;
 
 /**
- * Controls and manipulates the UI for the {@link NowPlayingActivity}
+ * Controls and manipulates the UI for the {@link HomeActivity}
  * 
  * @author keerthys
  * 
  */
-public class MusicController extends BaseController implements MediaPlayerControl, IMediaPlaybackListener {
+public class MusicController extends BaseController implements IMediaPlayerController,
+    IMediaPlaybackListener {
 
     private MusicService musicService;
-    private boolean boundToService;
+    // Static instance is needed as we should not establish a new service
+    // connection when the activity comes to front.
+    private static boolean boundToService;
     private Intent musicServiceIntent;
     private List<MusicItem> musicItems;
     private MediaControllerWidget musicControllerWidget;
@@ -40,6 +42,16 @@ public class MusicController extends BaseController implements MediaPlayerContro
     @Override
     public void start() {
         musicService.startMediaPlayer();
+    }
+
+    @Override
+    public void playNext() {
+        musicService.playNext();
+    }
+
+    @Override
+    public void playPrevious() {
+        musicService.playPrevious();
     }
 
     @Override
@@ -67,26 +79,6 @@ public class MusicController extends BaseController implements MediaPlayerContro
         return musicService.isPlaying();
     }
 
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
     /**
      * Callback that gets invoked when the connection with the
      * {@link MusicService} has been established / disconnected.
@@ -99,7 +91,7 @@ public class MusicController extends BaseController implements MediaPlayerContro
             musicService = musicBinder.getService();
             musicService.setList(musicItems);
             musicService.setListener(MusicController.this);
-            musicService.playMusic(3);    
+            musicService.playMusic(3);
             musicControllerWidget.show();
             boundToService = true;
         }
@@ -117,28 +109,12 @@ public class MusicController extends BaseController implements MediaPlayerContro
      * @param view
      */
     public void addMusicControllerWidget(View view, Context context) {
-        musicControllerWidget = new MediaControllerWidget(context);
-        musicControllerWidget.setMediaPlayer(this);
-        musicControllerWidget.setAnchorView(view);
-        musicControllerWidget.setEnabled(true);
-        musicControllerWidget.setAlpha(70);
-        musicControllerWidget.setPrevNextListeners(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              musicService.playNext();
-            }
-          }, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              musicService.playPrevious();
-              
-            }
-          });
+        musicControllerWidget = new MediaControllerWidget(context, view, this);
     }
-    
+
     @Override
     public void onTrackChange() {
-        musicControllerWidget.show(0);        
+        musicControllerWidget.show();
     }
 
     @Override
@@ -148,7 +124,7 @@ public class MusicController extends BaseController implements MediaPlayerContro
 
     @Override
     public void onStart() {
-        if (musicServiceIntent == null) {
+        if (!boundToService) {
             musicServiceIntent = new Intent(MediaApplication.getAppContext(), MusicService.class);
             MediaApplication.getAppContext().bindService(musicServiceIntent,
                 musicServiceConnection, Context.BIND_AUTO_CREATE);
