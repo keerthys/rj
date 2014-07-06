@@ -27,7 +27,7 @@ public class HomeActivity extends BaseActivity {
         NavigationDrawerController navigationDrawerController = new NavigationDrawerController(
             mDrawerLayout);
         this.addController(navigationDrawerController);
-
+        
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer,
             R.string.drawer_open, R.string.drawer_close) {
 

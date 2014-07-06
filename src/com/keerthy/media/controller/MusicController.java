@@ -17,28 +17,34 @@ import com.keerthy.media.service.MusicService;
 import com.keerthy.media.service.MusicService.MusicBinder;
 import com.keerthy.media.widget.MediaControllerWidget;
 import com.keerthy.media.widget.MediaControllerWidget.IMediaPlayerController;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 
 /**
- * Controls and manipulates the UI for the {@link HomeActivity}
+ * Singleton instance which controls and manipulates the UI for the {@link HomeActivity}
  * 
  * @author keerthys
  * 
  */
 public class MusicController extends BaseController implements IMediaPlayerController,
-    IMediaPlaybackListener {
+    IMediaPlaybackListener, PanelSlideListener {
 
     private MusicService musicService;
-    // Static instance is needed as we should not establish a new service
-    // connection when the activity comes to front.
-    private static boolean boundToService;
+    private boolean boundToService;
     private Intent musicServiceIntent;
     private List<MusicItem> musicItems;
     private MediaControllerWidget musicControllerWidget;
 
-    public MusicController() {
+    private MusicController() {
         musicItems = new MusicDetailsRetriever().getMediaItems();
     }
+    
+    public static MusicController getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
 
+    private static class SingletonHolder { 
+        private static final MusicController INSTANCE = new MusicController();
+    }
     @Override
     public void start() {
         musicService.startMediaPlayer();
@@ -77,6 +83,11 @@ public class MusicController extends BaseController implements IMediaPlayerContr
     @Override
     public boolean isPlaying() {
         return musicService.isPlaying();
+    }
+    
+    @Override
+    public MusicItem getCurrentItem() {
+        return musicService.getCurrentItem();
     }
 
     /**
@@ -135,6 +146,31 @@ public class MusicController extends BaseController implements IMediaPlayerContr
     @Override
     public void onStop() {
 
+    }
+
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+        musicControllerWidget.show();
+    }
+
+    @Override
+    public void onPanelCollapsed(View panel) {
+        
+    }
+
+    @Override
+    public void onPanelExpanded(View panel) {
+        musicControllerWidget.show();
+    }
+
+    @Override
+    public void onPanelAnchored(View panel) {
+        
+    }
+
+    @Override
+    public void onPanelHidden(View panel) {
+        
     }
 
 }

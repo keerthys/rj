@@ -7,6 +7,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.keerthy.media.cache.MusicItem;
 import com.keerthy.music.R;
 
 /**
@@ -44,21 +45,24 @@ public class MediaControllerWidget implements SeekBar.OnSeekBarChangeListener {
      * 
      */
     public interface IMediaPlayerController {
-        public void start();
+        void start();
 
-        public void pause();
+        void pause();
 
-        public int getDuration();
+        int getDuration();
 
-        public int getCurrentPosition();
+        int getCurrentPosition();
 
-        public void seekTo(int pos);
+        void seekTo(int pos);
 
         void playNext();
 
         void playPrevious();
 
         boolean isPlaying();
+        
+        MusicItem getCurrentItem();
+        
     }
 
     public MediaControllerWidget(Context context, View view,
@@ -165,7 +169,14 @@ public class MediaControllerWidget implements SeekBar.OnSeekBarChangeListener {
 
     public void show() {
         updateProgressBar();
-        btnPlay.setImageResource(R.drawable.btn_pause);
+        if (MediaControllerWidget.this.mediaPlayerController.isPlaying()) {
+            // Changing button image to pause button
+            btnPlay.setImageResource(R.drawable.btn_pause);
+        }
+        else {
+            // Changing button image to play button
+            btnPlay.setImageResource(R.drawable.btn_play);
+        }
     }
 
     @Override

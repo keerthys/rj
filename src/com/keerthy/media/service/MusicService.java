@@ -2,8 +2,6 @@ package com.keerthy.media.service;
 
 import java.util.List;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -15,10 +13,9 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 
-import com.keerthy.media.activities.HomeActivity;
 import com.keerthy.media.cache.MusicItem;
 import com.keerthy.media.controller.IMediaPlaybackListener;
-import com.keerthy.music.R;
+import com.keerthy.media.controller.NotificationController;
 
 /**
  * Talks with {@link MediaPlayer} and provides the implementation for the
@@ -30,7 +27,6 @@ import com.keerthy.music.R;
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, IMediaPlayerControls {
 
-    private static final int NOTIFY_ID = 1;
     private final IBinder musicBinder = new MusicBinder();
 
     private MediaPlayer mediaPlayer;
@@ -38,11 +34,37 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private IMediaPlaybackListener mediaPlaybackListener;
     private int currentIndex;
 
+    
     @Override
     public void onCreate() {
         super.onCreate();
         currentIndex = 0;
         initializeMediaPlayer();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent == null || intent.getAction() == null) {
+            return super.onStartCommand(intent, flags, startId);
+        }
+        
+        String action = intent.getAction();
+        if (NotificationController.ACTION_MEDIA_PLAYER_PLAY_NEXT.equals(action)) {
+            playNext();
+        }
+        else if (NotificationController.ACTION_MEDIA_PLAYER_PLAY_PREVIOUS.equals(action)) {
+            playPrevious();
+        }
+        else {
+            if (isPlaying()) {
+                pauseMediaPlayer();
+            }
+            else {
+                startMediaPlayer();
+            }
+        }
+        new NotificationController().sendNotification(this);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private void initializeMediaPlayer() {
@@ -73,6 +95,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public int getCurrentPostion() {
         return mediaPlayer.getCurrentPosition();
+    }
+    
+    public MusicItem getCurrentItem() {
+        return musicItems.get(currentIndex);
     }
 
     @Override
@@ -142,20 +168,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
         MusicItem musicItem = musicItems.get(currentIndex);
-        // TODO - Re factor notification part.
-        Intent notIntent = new Intent(this, HomeActivity.class);
-        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendInt = PendingIntent.getActivity(this, 0, notIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification.Builder builder = new Notification.Builder(this);
-
-        builder.setContentIntent(pendInt).setSmallIcon(R.drawable.ic_launcher)
-            .setTicker(musicItem.getTitle()).setOngoing(true).setContentTitle("Playing")
-            .setContentText(musicItem.getDisplayName());
-        Notification not = builder.build();
-
-        startForeground(NOTIFY_ID, not);
+        new NotificationController().sendNotification(this);
         mediaPlaybackListener.onTrackChange();
     }
 
