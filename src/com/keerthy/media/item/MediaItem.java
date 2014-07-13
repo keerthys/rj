@@ -1,4 +1,4 @@
-package com.keerthy.media.cache;
+package com.keerthy.media.item;
 
 public abstract class MediaItem {
 

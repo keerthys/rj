@@ -3,7 +3,7 @@ package com.keerthy.media.widget;
 import java.util.List;
 
 import com.keerthy.media.MediaApplication;
-import com.keerthy.media.cache.MusicItem;
+import com.keerthy.media.item.MusicItem;
 import com.keerthy.music.R;
 
 import android.view.LayoutInflater;

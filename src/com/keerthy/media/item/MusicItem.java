@@ -1,4 +1,4 @@
-package com.keerthy.media.cache;
+package com.keerthy.media.item;
 
 public final class MusicItem extends MediaItem {
 

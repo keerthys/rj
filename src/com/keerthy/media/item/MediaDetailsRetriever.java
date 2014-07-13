@@ -1,4 +1,4 @@
-package com.keerthy.media.cache;
+package com.keerthy.media.item;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +9,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
-public abstract class MediaDetailsRetriever<T> {
+public abstract class MediaDetailsRetriever {
 
     abstract String[] getProjection();
 
@@ -17,13 +17,13 @@ public abstract class MediaDetailsRetriever<T> {
 
     abstract Uri getUri();
 
-    abstract T constructMediaItem(Cursor cursor);
+    abstract MediaItem constructMediaItem(Cursor cursor);
 
-    public List<T> getMediaItems() {
+    public List<MediaItem> getMediaItems() {
         ContentResolver contentResolver = MediaApplication.getAppContext().getContentResolver();
         Cursor cursor = contentResolver
             .query(getUri(), getProjection(), getSelection(), null, null);
-        List<T> mediaList = new LinkedList<T>();
+        List<MediaItem> mediaList = new LinkedList<MediaItem>();
         while (cursor.moveToNext()) {
             mediaList.add(constructMediaItem(cursor));
         }

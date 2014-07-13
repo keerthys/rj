@@ -11,8 +11,9 @@ import android.view.View;
 
 import com.keerthy.media.MediaApplication;
 import com.keerthy.media.activities.HomeActivity;
-import com.keerthy.media.cache.MusicDetailsRetriever;
-import com.keerthy.media.cache.MusicItem;
+import com.keerthy.media.item.MediaItem;
+import com.keerthy.media.item.MusicDetailsRetriever;
+import com.keerthy.media.item.MusicItem;
 import com.keerthy.media.service.MusicService;
 import com.keerthy.media.service.MusicService.MusicBinder;
 import com.keerthy.media.widget.MediaControllerWidget;
@@ -31,7 +32,7 @@ public class MusicController extends BaseController implements IMediaPlayerContr
     private MusicService musicService;
     private boolean boundToService;
     private Intent musicServiceIntent;
-    private List<MusicItem> musicItems;
+    private List<MediaItem> musicItems;
     private MediaControllerWidget musicControllerWidget;
 
     private MusicController() {

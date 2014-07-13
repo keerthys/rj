@@ -1,11 +1,11 @@
-package com.keerthy.media.cache;
+package com.keerthy.media.item;
 
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-public class MusicDetailsRetriever extends MediaDetailsRetriever<MusicItem> {
+public class MusicDetailsRetriever extends MediaDetailsRetriever {
 
     private static final String SELECTION = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
@@ -31,7 +31,7 @@ public class MusicDetailsRetriever extends MediaDetailsRetriever<MusicItem> {
     }
 
     @Override
-    MusicItem constructMediaItem(Cursor cursor) {
+    MediaItem constructMediaItem(Cursor cursor) {
         MusicItem musicItem = new MusicItem();
         musicItem.setId(cursor.getLong(0));
         musicItem.setArtist(cursor.getString(1));

@@ -13,9 +13,10 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 
-import com.keerthy.media.cache.MusicItem;
 import com.keerthy.media.controller.IMediaPlaybackListener;
 import com.keerthy.media.controller.NotificationController;
+import com.keerthy.media.item.MediaItem;
+import com.keerthy.media.item.MusicItem;
 
 /**
  * Talks with {@link MediaPlayer} and provides the implementation for the
@@ -30,7 +31,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private final IBinder musicBinder = new MusicBinder();
 
     private MediaPlayer mediaPlayer;
-    private List<MusicItem> musicItems;
+    private List<MediaItem> musicItems;
     private IMediaPlaybackListener mediaPlaybackListener;
     private int currentIndex;
 
@@ -77,7 +78,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mediaPlayer.setOnCompletionListener(this);
     }
 
-    public void setList(List<MusicItem> musicItems) {
+    public void setList(List<MediaItem> musicItems) {
         this.musicItems = musicItems;
         this.currentIndex = 0;
     }
@@ -98,7 +99,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
     
     public MusicItem getCurrentItem() {
-        return musicItems.get(currentIndex);
+        return (MusicItem) musicItems.get(currentIndex);
     }
 
     @Override
@@ -167,13 +168,13 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
-        MusicItem musicItem = musicItems.get(currentIndex);
+        MusicItem musicItem = (MusicItem) musicItems.get(currentIndex);
         new NotificationController().sendNotification(this);
         mediaPlaybackListener.onTrackChange();
     }
 
     private void playMusic() {
-        MusicItem musicItem = musicItems.get(currentIndex);
+        MusicItem musicItem = (MusicItem) musicItems.get(currentIndex);
         long id = musicItem.getId();
         Uri musicUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         try {

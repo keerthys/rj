@@ -7,7 +7,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.keerthy.media.cache.MusicItem;
+import com.keerthy.media.item.MusicItem;
 import com.keerthy.music.R;
 
 /**
